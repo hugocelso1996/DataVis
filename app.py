@@ -8,17 +8,7 @@ import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 from dash.dependencies import Input, Output, State
 import assets as assets
-from Plots import fig_plot
-from Maps import fig_map
-from Pie import fig_pie
-from Top_10 import fig_top
-from Categories import fig_cat
-from Bar import fig_bar
-from Maps import table
-from Cleaned_Data import (df,
-                          df_year,
-                          df_year_slider,
-                          df_category_plot)
+
 
 
 import seaborn as sns
