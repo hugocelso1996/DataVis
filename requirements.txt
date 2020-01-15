@@ -9,4 +9,8 @@ pandas
 numpy
 plotly.express
 dash_bootstrap_components
-
+assets
+dash.dependencies
+plotly.subplots
+plotly.graph_objs
+datetime
