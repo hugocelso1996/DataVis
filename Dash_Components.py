@@ -1,3 +1,4 @@
+import gunicorn
 import pandas as pd
 import datetime as datetime
 import dash
