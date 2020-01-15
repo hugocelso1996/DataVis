@@ -9,4 +9,4 @@ pandas
 numpy
 plotly.express
 dash_bootstrap_components
-plotly.graph_objs
+
