@@ -9,6 +9,4 @@ pandas
 numpy
 plotly.express
 dash_bootstrap_components
-plotly.subplots
-plotly.graph_objs
 datetime
