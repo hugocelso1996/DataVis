@@ -3,8 +3,11 @@ from plotly.subplots import make_subplots
 
 top_labels = ['Successful projects','Failed projects', 'Canceled projects']
 
-colors = ['rgba(38, 24, 74, 0.8)', 'rgba(71, 58, 131, 0.8)',
-          'rgba(122, 120, 168, 0.8)']
+colors = ['rgb(62, 83, 160)', 'rgb(72, 134, 187)','rgb(114, 184, 205)']
+
+#TODO change the x_data into the actual count of ID's per year (always all three states)
+#Numbers display numbers of IDs per year per category
+#First row is Art label, Second Comics...
 
 x_data = [[31, 58, 9],
           [37, 52, 10],
@@ -22,7 +25,7 @@ x_data = [[31, 58, 9],
           [62, 33, 5],
           [21, 66, 11],]
 
-
+#TODO y_data should stay the same, so only change x_values
 y_data = ['Publishing', 'Film & Video', 'Music', 'Food', 'Design', 'Crafts',
        'Games', 'Comics', 'Fashion', 'Theater', 'Art', 'Photography',
        'Technology', 'Dance', 'Journalism']

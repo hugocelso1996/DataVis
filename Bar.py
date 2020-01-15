@@ -60,5 +60,4 @@ fig_bar.add_trace(go.Bar(
     marker_color='rgb(44, 42, 87)'
 ))
 
-# Here we modify the tickangle of the xaxis, resulting in rotated labels.
 fig_bar.update_layout(barmode='group', xaxis_tickangle=45)

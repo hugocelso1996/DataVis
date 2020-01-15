@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# -*- coding: utf-8 -*-
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -16,7 +15,7 @@ import plotly.graph_objs as go
 
 
 # read data
-path = 'C:/Users/hugoc/OneDrive/Desktop/Masters/DataVisProject/Project_Data_Visualization-master/ks-projects-201801.csv'
+path = 'data/ks-projects-201801.csv'
 df = pd.read_csv(path, header = 0, sep = ',')
 
 # get dataframe info
@@ -25,11 +24,11 @@ df.info()
 df.head()
 
 #Remove month and day from launched column
-new = df['launched'].str.split('-', n = 1, expand = True)
+new = df['launched'].str.split('-', n = 1, expand = True) 
 df['launched year'] = new[0]
 
 #Remove month and day from launched column
-new = df['deadline'].str.split('-', n = 2, expand = True)
+new = df['deadline'].str.split('-', n = 2, expand = True) 
 df['deadline_YM'] = new[0].add('-').add(new[1])
 
 #Remove launched year < 1990
@@ -86,11 +85,9 @@ df_category_plot['deadline_years'] = pd.to_numeric(df_category_plot['deadline_ye
 
 
 codes = ["AUT","AUS","BEL","CAN","CHE","DEU","DNK","ESP","FRA","GBR","HKG","IRL","ITA","JPN","LUX","MEX","NLD","NOR","NZL","SWE","SGP","USA"]
-
 table = df.groupby(['country','launched year','state'])['ID'].count()
 table = table.to_frame().reset_index()
 table['%'] = (100 * table['ID'] / table.groupby(['launched year', 'country'])['ID'].transform('sum')).round(1)
-
 
 table
 count = 0
@@ -108,7 +105,6 @@ for i in range(len(table["country"])):
             print(table["country"][i], "", codes[h][0:2], "1stIf ", codes[h])
             table["country"][i] = codes[h]
             continue
-
         elif table["country"][i] == codes[h][0::2]:
             print(table["country"][i], "", codes[h][0::2], "2ndIf ", codes[h])
             table["country"][i] = codes[h]
@@ -118,8 +114,6 @@ for i in range(len(table["country"])):
                 print(table["country"][i], "else")
                 table["country"][i] = "IRL"
                 continue
-
 table.country.unique()
-
 table[(table["state"] == "failed") & (table['launched year'] == 2015)]["country"]
 table.country.unique()

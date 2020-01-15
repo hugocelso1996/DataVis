@@ -1,5 +1,5 @@
+import os
 import pandas as pd
-import gunicorn
 import datetime as datetime
 import dash
 import dash_core_components as dcc
@@ -22,128 +22,91 @@ from Cleaned_Data import (df,
                           df_category_plot)
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-server = app.server
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
+server = app.server
+
+
+style = {'display': 'inline-block',
+         'border-radius': '3px',
+         'box-shadow': '5px 5px 5px grey',
+         'background-color': '#FFFFFF',
+         'padding': '5px',
+         'margin-top': '20px',
+         'margin-bottom': '30px',
+         'margin-left': '30px',
+         'margin-right': '30px'}
 
 body = dbc.Container(
     [
         dbc.Row(
                 dbc.Col(
-                        html.Div(
-                            html.Img(
-                                src=app.get_asset_url("kickstarter-logo.png"),
-                                id="kickstarter-image",
-                                style={
-                                    "display":"block",
-                                    "padding": 10,
-                                    "margin-left": "auto",
-                                    "margin-right": "auto",
-                                    "width": "500px",
-                                    "height": "60px",
-                                    },
-                             )), width={"size": 6, "offset": 3},)),
-        dbc.Row(
-                dbc.Col(
-                            html.Div(
-                                html.H4('Overview of the Crowdfunding Company "Kickstarter"'),
-                                style={
-                                    "color": 'black',
-                                    'textAlign': 'center',
-                                    'padding': 10,
-                                    'margin-left': "auto",
-                                    'margin-right': 'auto',
-                                    },
-                                    ), width={"size": 6, "offset": 3},
-                        )),
+                        dbc.NavbarSimple(
+                            children=[
+                                dbc.DropdownMenu(
+                                    children=[
+                                        dbc.DropdownMenuItem(dbc.Label("Choose the year you want to display (2009 - 2018)", html_for="slider")),
+                                        dcc.RangeSlider(id="slider_year",
+                                                        min=int(df_year_slider["deadline_years"].min()),
+                                                        max=int(df_year_slider["deadline_years"].max()),
+                                                        step=None,
+                                                        value=[int(df_year_slider["deadline_years"].min()),
+                                                               int(df_year_slider["deadline_years"].max())],
+                                                        marks={int(i): str(i) for i in
+                                                               df_year_slider['deadline_years']}),
+                                        dbc.DropdownMenuItem(dbc.Label("Choose between different Project States", html_for="dropdown")),
+                                        dcc.Dropdown(
+                                            id="category_selection",
+                                            options=[
+                                                {"label": "Successful", "value": 1},
+                                                {"label": "Failed", "value": 2},
+                                                {"label": "Canceled", "value": 3},
+                                            ],
+                                            value=[1, 2],
+                                            multi=True
+
+                                        ),
+                                        dbc.DropdownMenuItem(dbc.Label("Choose one Project State for the World Map")),
+                                        dbc.RadioItems(
+                                            options=[
+                                                {"label": "successful", "value": 1},
+                                                {"label": "failed", "value": 2},
+                                                {"label": "canceled", "value": 3},
+                                            ],
+                                        value=1,
+                                        id="input"),
+                                    ],
+                                    nav=True,
+                                    in_navbar=True,
+                                    label="Project Parameter Menu",
+                                ),
+                            ],
+                            brand="Overview of Crowdfunding Project on Kickstarter",
+                            brand_href="#",
+                            color='#084489',
+                            dark=True,
+                        ))),
         dbc.Row(
             [
                 dbc.Col(
-                    [
-                        html.H4("Parameter Column", style={'text-align': 'center'}),
-                        dbc.FormGroup(
-                            [
-                                dbc.Label("Choose the Year you want to analyse", html_for="slider"),
-                                dcc.RangeSlider(id="slider_year",
-                                                min=int(df_year_slider["deadline_years"].min()),
-                                                max=int(df_year_slider["deadline_years"].max()),
-                                                step=None,
-                                                value=[int(df_year_slider["deadline_years"].min()), int(df_year_slider["deadline_years"].max())],
-                                                marks={int(i): str(i) for i in df_year_slider['deadline_years']})
-                            ],
-
-
-                        ),
-                        dbc.Label("Choose the state of the project", html_for="dropdown"),
-                                dcc.Dropdown(
-                                    id="category_selection",
-                                    options=[
-                                        {"label": "Successful", "value": 1},
-                                        {"label": "Failed", "value": 2},
-                                        {"label": "Canceled", "value": 3},
-                                    ],
-                                    value=[1,2],
-                                    multi=True
-
-                                ),
-                    ], style={'display': 'inline-block',
-                                 'border-radius': '3px',
-                                 'box-shadow': '0px 0px 0px grey',
-                                 'background-color': '#f9f9f9',
-                                 'padding': '5px',
-                                 'margin-bottom': '2px',
-                                 'margin-left': '2px',
-                                 'margin-right': '2px'
-
-                                 }),
-
+                        [
+                            html.H4("World Graph - Countries Distribution", style={'text-align': 'center'}),
+                            dcc.Graph(
+                                id="fig_map",
+                                figure=fig_map
+                            ),
+                        ], style=style
+                    ),
                 dbc.Col(
-                    [
-                        html.H4("World Graph - Distribution by Countries", style={'text-align': 'center'}),
-                        dcc.Graph(
-                            id="fig_map",
-                            figure=fig_map
-                        ),
-
-                        dbc.FormGroup(
-                            [
-                                dbc.Label("Choose One"),
-                                dbc.RadioItems( options=[
-                                {"label": "successful", "value": 1},
-                                {"label": "failed", "value": 2},
-                                {"label": "canceled", "value": 3},
-                                ],
-                                value=1,
-                                id="input"
-                                ),
-                            ])
-
-                            ], style={'display': 'inline-block',
-                                         'border-radius': '3px',
-                                         'box-shadow': '0px 0px 0px grey',
-                                         'background-color': '#f9f9f9',
-                                         'padding': '5px',
-                                         'margin-bottom': '2px',
-                                         'margin-left': '2px',
-                                         'margin-right': '2px'
-                                      }),
-
-                dbc.Col(
-                    [
-                        html.H4('Number of Projects by Year and State', style={'text-align': 'center'}),
-                        dcc.Graph(
-                            id="fig_plot",
-                            figure=fig_plot
-                        ),
-                    ], style={'display': 'inline-block',
-                                 'border-radius': '3px',
-                                 'box-shadow': '0px 0px 0px grey',
-                                 'background-color': '#f9f9f9',
-                                 'padding': '5px',
-                                 'margin-bottom': '2px',
-                                 'margin-left': '2px',
-                                 'margin-right': '2px'
-                              }, width=4)]),
+                        [
+                            html.H4('Number of Projects by Year and State', style={'text-align': 'center'}),
+                            dcc.Graph(
+                                id="fig_plot",
+                                figure=fig_plot
+                            ),
+                        ], style=style
+                            )
+            ], align="center"),
 
         dbc.Row(
             [
@@ -154,15 +117,7 @@ body = dbc.Container(
                                 id="fig_top",
                                 figure=fig_top
                             ),
-                        ], style={'display': 'inline-block',
-                                 'border-radius': '3px',
-                                 'box-shadow': '0px 0px 0px grey',
-                                 'background-color': '#f9f9f9',
-                                 'padding': '5px',
-                                 'margin-top': '10px',
-                                 'margin-bottom': '2px',
-                                 'margin-left': '10px',
-                                 'margin-right': '10px'},
+                        ], style=style
                     ),
                 dbc.Col(
                     [
@@ -171,16 +126,8 @@ body = dbc.Container(
                             id="fig_bar",
                             figure=fig_bar
                         ),
-                    ], style={'display': 'inline-block',
-                                 'border-radius': '3px',
-                                 'box-shadow': '0px 0px 0px grey',
-                                 'background-color': '#f9f9f9',
-                                 'padding': '5px',
-                                 'margin-top': '10px',
-                                 'margin-bottom': '2px',
-                                 'margin-left': '10px',
-                                 'margin-right': '10px'},
-                )
+                    ], style=style,
+                        )
             ], align="center"),
 
         dbc.Row(
@@ -192,15 +139,7 @@ body = dbc.Container(
                             id="fig_pie",
                             figure=fig_pie
                         ),
-                    ], style={'display': 'inline-block',
-                                 'border-radius': '3px',
-                                 'box-shadow': '0px 0px 0px grey',
-                                 'background-color': '#f9f9f9',
-                                 'padding': '5px',
-                                 'margin-top': '10px',
-                                 'margin-bottom': '2px',
-                                 'margin-left': '10px',
-                                 'margin-right': '10px'},
+                    ], style=style,
                     ),
                 dbc.Col(
                     [
@@ -209,18 +148,10 @@ body = dbc.Container(
                             id="fig_cat",
                             figure=fig_cat
                         ),
-                    ],  style={'display': 'inline-block',
-                                 'border-radius': '3px',
-                                 'box-shadow': '0px 0px 0px grey',
-                                 'background-color': '#f9f9f9',
-                                 'padding': '5px',
-                                 'margin-top': '10px',
-                                 'margin-bottom': '2px',
-                                 'margin-left': '10px',
-                                 'margin-right': '10px'},
+                    ],  style=style,
                         )
                 ], align="center"),
-    ], style={'backgroundColor': '#ffffff'}, fluid=True)
+    ], style={'backgroundColor': '#FAFAFA'}, fluid=True)
 
 
 
@@ -253,8 +184,7 @@ def update_time_series(year_value, category_value):
         trace = go.Scatter(x=dff[dff['state'] == category_meaning.get(i)].deadline_YM,
                          y=dff[dff['state'] == category_meaning.get(i)].ID,
                          name=category_meaning.get(i),
-                         line=dict(width=1,
-                                   color=colors[i-1]))
+                         line=dict(width=2.5,color=colors[i-1]))
         trace_list.append(trace)
 
     layout = go.Layout(title='Time Series Plot',
@@ -314,15 +244,14 @@ def update_pie_categories(year_value, category_value):
     fig_pie.add_traces(trace)
 
     fig_pie.update_traces(hole=.4, hoverinfo="label+percent")
-    fig_pie.update_layout(title_text="Project Categories by State",
-                          annotations=[dict(text=' All Projects', x=0.04, y=0.95, font_size=14, showarrow=False)])
+    fig_pie.update_layout(annotations=[dict(text=' All Projects', x=0.04, y=0.95, font_size=14, showarrow=False)])
 
     return fig_pie
 
 @app.callback(Output('fig_cat', 'figure'),
               [Input('slider_year', 'value'),
                Input('category_selection', 'value')])
-def update_pie_categories(year_value, category_value):
+def update_category_states(year_value, category_value):
 
     year_value1 = year_value[0]
     year_value2 = year_value[1]
@@ -336,8 +265,6 @@ def update_pie_categories(year_value, category_value):
                         2: "failed",
                         3: "canceled"}
 
-    # TODO change the x_data into the actual count of ID's per year (always all three states)
-
     dff = df_category_plot[df_category_plot['deadline_years'].between(year_value1, year_value2, inclusive=True)]
 
     i = 0
@@ -350,10 +277,9 @@ def update_pie_categories(year_value, category_value):
         # trace_list.append(values[['main_category', 'ID']])
 
     full_data = pd.concat(trace_list).fillna(0).astype(str).sort_index().reset_index(drop=True)
-    full_data
 
     full_data = full_data.drop(columns=['deadline_years'])
-    full_data
+
     full_data['ID'] = pd.to_numeric(full_data['ID'])
     summed = full_data.groupby(['main_category', 'state']).sum().reset_index()
     ##test = summed.sort_values(by='ID', ascending=False)
@@ -362,22 +288,18 @@ def update_pie_categories(year_value, category_value):
     # summed = summed.values.tolist()
 
     col_one_list = summed['ID'].tolist()
-    col_one_list
+
 
     total_lists = 15
     result = [col_one_list[i::total_lists] for i in range(total_lists)]
     result_df = pd.DataFrame(result)
-    result_df.values
     result_df['SUM'] = result_df.sum(axis=1)
-    result_df.values
     df_new = result_df.loc[:, result_df.columns != 'SUM'].div(result_df['SUM'], axis=0)
     df_new = df_new.round(2)
     df_new[df_new.select_dtypes(include=['number']).columns] *= 100
     df_new = df_new.astype(int)
 
     x_data = df_new.values.tolist()
-
-    # TODO y_data should stay the same, so only change x_values
     y_data = ['Theater', 'Technology', 'Publishing', 'Photography', 'Music', 'Journalism',
               'Games', 'Food', 'Film & Video', 'Fashion', 'Design', 'Dance', 'Crafts', 'Comics', 'Art']
 
@@ -409,8 +331,8 @@ def update_pie_categories(year_value, category_value):
             zeroline=False,
         ),
         barmode='stack',
-        paper_bgcolor='rgb(248, 248, 255)',
-        plot_bgcolor='rgb(248, 248, 255)',
+        #paper_bgcolor='rgb(248, 248, 255)',
+        #plot_bgcolor='rgb(248, 248, 255)',
         margin=dict(l=110, r=10, t=140, b=80),
         showlegend=False,
     )
