@@ -1,1 +1,10 @@
-$ pip freeze > requirements.txt
+gunicorn
+dash
+plotly
+gunicorn
+dash_core_components
+dash_html_components
+dash_bootstrap_components
+pandas
+numpy
+plotly.express
