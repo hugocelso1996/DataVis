@@ -1,0 +1,4 @@
+envy
+*.pyc
+.DS_Store
+.env
