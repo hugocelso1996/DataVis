@@ -11,3 +11,5 @@ plotly.express
 dash_bootstrap_components
 datetime
 seaborn
+matplotlib
+scipy
