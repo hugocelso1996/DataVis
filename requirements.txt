@@ -14,9 +14,4 @@ seaborn
 matplotlib
 scipy
 chart_studio
-Cleaned_Data
-Plots
-Categories
-Maps
-Pie 
-Bar
+
